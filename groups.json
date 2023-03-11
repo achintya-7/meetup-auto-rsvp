@@ -1,0 +1,19 @@
+{
+    "groups":
+    [
+       {
+            "name": "salsa-classes-the-vow",
+            "end_date":"2023-03-31",
+            "allow_waitlist":true,
+            "event_limit":3,
+            "seats":1
+        },
+        {
+            "name": "manageengine-india-chapter",
+            "end_date":"2023-03-31",
+            "allow_waitlist":true,
+            "event_limit":3,
+            "seats":1
+        }
+    ]
+}

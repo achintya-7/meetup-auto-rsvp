@@ -1,0 +1,19 @@
+{
+  "authority": "www.meetup.com",
+  "accept": "*/*",
+  "accept-language": "en-US",
+  "apollographql-client-name": "nextjs-web",
+  "content-type": "application/json",
+  "next_csrf": "401ac9ef-21ec-443b-8bb9-1a6d7031d1cf",
+  "origin": "https://www.meetup.com",
+  "referer": "https://www.meetup.com/",
+  "sec-ch-ua": "\"Chromium\";v=\"110\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"110\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "same-origin",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+  "x-meetup-view-id": "8e7e75b3-b1ba-410f-a904-dbf3fb79ae98",
+  "x-tracking-request-id": "7cde2028-c314-4f68-8c9f-bfb637df2a98"
+}
