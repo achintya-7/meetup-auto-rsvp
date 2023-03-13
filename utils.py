@@ -20,3 +20,6 @@ def get_json(file: str) -> dict:
     
 def getUrl(group: str):
      return 'https://www.meetup.com/' + group + '/'
+
+def getEventUrl(group: str, eventId: str):
+    return getUrl(group) + 'events/' + eventId + '/'

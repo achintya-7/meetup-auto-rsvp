@@ -3,6 +3,28 @@ import requests
 
 from utils import *
 
+def login2():
+    user = get_json('credentials.json')
+    headers = get_headers('login')
+    # r = requests.get('https://secure.meetup.com/login/', headers=headers)
+
+    headers = get_headers('login')
+    # cookies = get_cookies('login')
+
+    data = {
+            'email': user['email'],
+            'password': user['password'],
+            'rememberme': 'on',
+            'submitButton': 'Log in',
+            'returnUri': 'https://www.meetup.com/',
+            'op': 'login',
+            'apiAppClientId': ''
+        }
+    loginResponse = requests.post('https://secure.meetup.com/login/', data=data)
+
+    print(loginResponse.cookies)
+     
+
 def login():
     user = get_json('credentials.json')
     headers = get_headers('login')
@@ -32,8 +54,7 @@ def login():
         loginResponse = requests.post('https://www.meetup.com/gql', headers=headers, json=data, cookies=cookies)
         loginJson = loginResponse.json()
         memberId = loginJson['data']['login']['memberId']
-        if memberId:
-            return memberId
+        return memberId, loginResponse.cookies
     except Exception as e:
         print(e)
 
@@ -63,19 +84,100 @@ def get_events(group: str, endDate: str):
 
         return events
 
+def rsvp_events(event_id: str, member_id: str, authCookies: dict):
+    cookies = get_cookies('rsvp')
+    cookies.update(authCookies)
+    cookies.update({member_id: member_id})
+
+    headers = get_headers('rsvp')
+
+    json_data = {
+        'operationName': 'rsvpToEvent',
+        'variables': {
+            'input': {
+                'eventId': event_id,
+                'response': 'YES',
+                'proEmailShareOptin': False,
+            },
+        },
+        'extensions': {
+            'persistedQuery': {
+                'version': 1,
+                'sha256Hash': '548c5377e0e656217cc0370fe7bd3fcf18dff95f0f7baedea20aa8031595f637',
+            },
+        },
+    }
+
+    response = requests.post('https://www.meetup.com/gql', cookies=cookies, headers=headers, json=json_data)
+    print(response.text)
+
+
+# def rsvp(group_name: str, event_id: str):
+#     requests.headers = get_headers('standard')
+
+#     requests.headers = {
+#         'authority': 'www.meetup.com',
+#         'upgrade-insecure-requests': '1',
+#         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) '
+#                         'Chrome/80.0.3987.132 Safari/537.36',
+#         'sec-fetch-dest': 'document',
+#         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,'
+#                     'application/signed-exchange;v=b3;q=0.9',
+#         'sec-fetch-site': 'none',
+#         'sec-fetch-mode': 'navigate',
+#         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+#     }
+
+#     params = (
+#         ('action', 'rsvp'),
+#         ('response', 'yes'),
+#     )
+
+#     url = getEventUrl(group=group_name, eventId=event_id)
+
+#     response = requests.get(url, params=params)
+#     if response.status_code != 200:
+#         print('Failed to get event page')
+#         return
+
+#     referer = url + '?action=rsvp&response=yes'  # referer in header
+#     requests.headers = get_headers('rsvp')
+#     requests.headers['referer'] = referer
+#     # requests.headers['x-mwp-csrf'] = requests.cookies['x-mwp-csrf-header']
+#     queryStr = '(endpoint:' \
+#                 + group_name + "/events/" + event_id + "/rsvps" \
+#                 + ',meta:(method:post),' \
+#                 + 'params:(eventId:' + event_id \
+#                 + ',fields:rsvp_counts,' \
+#                 + 'response:yes,' \
+#                 + 'self.group.urlname:' +group_name + ')' \
+#                 + ',ref:rsvpAction' + "_" + group_name + '_' + event_id + ')'
+
+#     data = {
+#         'queries': queryStr
+#     }
+#     response = requests.post('https://www.meetup.com/mu_api/urlname/events/eventId', data=data)
+#     print(response.text)
+
 if __name__ == '__main__':
-    # memberId = login()
-    # print(memberId)
+    memberId, cookies = login()
+    print(cookies)
 
     groups = get_json('groups.json')
     for group in groups['groups']:
         print("Getting events for " + group['name'])
         events = get_events(group['name'], group['end_date'])
 
-        if events is None:
+        if len(events) == 0:
             print("\tNo events found")
-            break
+            continue
 
         print("\tFound " + str(len(events)) + " events")
+
         for event in events:
-                print("\t\t" + event['name'])
+            print(event['name'])
+            rsvp_events(event['id'], memberId, cookies)
+
+
+
+        
